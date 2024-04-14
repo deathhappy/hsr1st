@@ -3,7 +3,9 @@
         <div class="title" style="flex-direction: column;">
             <div class="title">
                 <div class="title_text">總數: 29 已收集：{{ disabledCount }} 未收集：{{29 - disabledCount}}</div>
+                <div /><div />
                 <el-button type="primary" @click="resetDisabled">清除紀錄</el-button>
+                <el-button type="primary" @click="takeScreenshot">輸出截圖</el-button>
             </div>            
             <div class="title">
                 <div class="title_text">單排數量: </div>
@@ -26,6 +28,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
+import html2canvas from 'html2canvas'
 import imageCard from '@/components/imageCard.vue'
 const images = ref([]);
 const rowNum = ref(8);
@@ -73,6 +76,15 @@ function clickCard(img, index) {
 function resetDisabled() {
     setArrayToCookie('disabledArray', [])
     loadImages()
+}
+
+function takeScreenshot() {
+    html2canvas(document.body).then(canvas => {
+        const imgURL = canvas.toDataURL();
+
+        const newWindow = window.open();
+        newWindow.document.write('<img src="' + imgURL + '" />');
+    });
 }
 
 function getCookie(name) {
