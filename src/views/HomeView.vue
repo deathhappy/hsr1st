@@ -1,12 +1,10 @@
 <template>
     <div>
-        <!-- <div class="image-row" v-for="(image, index) in imageChunks" :key="index">
-            <imageCard v-for="(img, i) in image" :src="getImageUrl(img)" :key="i" />
-        </div> -->
+        <div class="title">Total: {{ disabledCount }} / 29</div>
         <div class="image-row">
             <imageCard v-for="(img, i) in images" :src="img.name" :disabled="img.disabled" 
                 :key="i" @click="img.disabled=!img.disabled" />
-            {{ disabledCount }} / 29
+            
         </div>
     </div>
 </template>
@@ -52,6 +50,10 @@ onMounted(loadImages);
 </script>
 
 <style scoped>
+.title {
+    font-size: 24px;
+}
+
 .image-row {
     width: 100%;
     display: flex;
@@ -59,6 +61,6 @@ onMounted(loadImages);
 }
   
 .image-row img {
-    width: calc(100% / 12)
+    //width: calc(100% / 12);
 }
 </style>
