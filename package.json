@@ -1,0 +1,27 @@
+{
+  "name": "hsr1st",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "deploy": "vite build && gh-pages -d dist",
+    "build": "vite build",
+    "format": "prettier --write src/",
+    "predeploy": "npm run build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "google-auth-library": "^9.7.0",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0",
+    "vue3-google-login": "^2.0.26"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "gh-pages": "^6.1.1",
+    "prettier": "^3.1.1",
+    "vite": "^5.2.0"
+  }
+}

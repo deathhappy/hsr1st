@@ -1,0 +1,62 @@
+<template>
+    <div>
+        <!-- <div class="image-row" v-for="(image, index) in imageChunks" :key="index">
+            <imageCard v-for="(img, i) in image" :src="getImageUrl(img)" :key="i" />
+        </div> -->
+        <div class="image-row">
+            <imageCard v-for="(img, i) in images" :src="getImageUrl(img.path)" :disabled="img.disabled" 
+                :key="i" @click="img.disabled=!img.disabled" />
+            {{ disabledCount }} / 29
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import imageCard from '../components/imageCard.vue'
+const images = ref([]);
+
+const loadImages = () => {
+    images.value = []
+    const requireImages = import.meta.glob('../assets/hsr1st/*.png');
+    console.log(requireImages);
+    for (const key in requireImages) {
+        // console.log(key);
+        images.value.push({path: key, disabled: false})
+    }
+    console.log(images.value)
+};
+
+// Split images into chunks of 6
+const imageChunks = computed(() => {
+    const chunkSize = 6;
+    const chunks = [];
+    for (let i = 0; i < images.value.length; i += chunkSize) {
+        chunks.push(images.value.slice(i, i + chunkSize));
+    }
+    return chunks;
+});
+
+const disabledCount = computed(() => {
+    return 29 - images.value.filter(element => element.disabled).length
+})
+
+function getImageUrl(path) {
+    return new URL(`${path}`, import.meta.url).href
+}
+
+onMounted(loadImages);
+
+</script>
+
+<style scoped>
+.image-row {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+  
+.image-row img {
+    width: calc(100% / 12)
+}
+</style>
