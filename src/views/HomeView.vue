@@ -4,12 +4,12 @@
             <div class="title">
                 <div class="title_text">總數: 29 已收集：{{ disabledCount }} 未收集：{{29 - disabledCount}}</div>
                 <div /><div />
-                <el-button type="primary" @click="resetDisabled">清除紀錄</el-button>
+                <el-button type="primary" @click="resetCookie">清除紀錄</el-button>
                 <el-button type="primary" @click="takeScreenshot">輸出截圖</el-button>
             </div>            
             <div class="title">
                 <div class="title_text">單排數量: </div>
-                <el-select v-model="rowNum" placeholder="Select" style="width: 240px">
+                <el-select v-model="rowNum" placeholder="Select" style="width: 240px" @change="rowNumChange">
                     <el-option
                         v-for="item in 29"
                         :key="item"
@@ -43,6 +43,7 @@ const loadImages = () => {
     const requireImages = import.meta.glob('../assets/hsr1st/*.png');
     //console.log(requireImages);
     disabledArray.value = getArrayFromCookie('disabledArray')
+    rowNum.value = Number(getCookie('rowNum')!= undefined ? getCookie('rowNum') : 8)
     for (const key in requireImages) {
         // console.log(key);
         const match = key.match(/([^\/]+)\.\w+$/);
@@ -73,8 +74,9 @@ function clickCard(img, index) {
     setArrayToCookie('disabledArray', images.value.filter(item => item.disabled === true).map(item => item.name))
 }
 
-function resetDisabled() {
+function resetCookie() {
     setArrayToCookie('disabledArray', [])
+    setCookie('rowNum', 8)
     loadImages()
 }
 
@@ -85,6 +87,10 @@ function takeScreenshot() {
         const newWindow = window.open();
         newWindow.document.write('<img src="' + imgURL + '" />');
     });
+}
+
+function rowNumChange() {
+    setCookie('rowNum', rowNum.value)
 }
 
 function getCookie(name) {
