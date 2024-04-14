@@ -3,13 +3,11 @@
         <div class="title" style="flex-direction: column;">
             <div class="title">
                 <div class="title_text">總數: 29 未收集：{{ disabledCount }} 已收集：{{29 - disabledCount}}</div>
-                <div /><div />
-                <el-button type="primary" @click="resetCookie">清除紀錄</el-button>
-                <el-button type="primary" @click="takeScreenshot">輸出截圖</el-button>
+                
             </div>            
             <div class="title">
                 <div class="title_text">單排數量: </div>
-                <el-select v-model="rowNum" placeholder="Select" style="width: 240px" @change="rowNumChange">
+                <el-select v-model="rowNum" placeholder="Select" style="width: 80px" @change="rowNumChange">
                     <el-option
                         v-for="item in 29"
                         :key="item"
@@ -17,11 +15,14 @@
                         :value="item"
                     />
                 </el-select>
+                <el-button type="primary" @click="resetCookie">清除紀錄</el-button>
+                <el-button type="primary" @click="takeScreenshot">輸出截圖</el-button>
+                <el-switch v-model="isEnableDisplay" /><div class="title_text">只顯示未收集</div>
             </div>            
         </div>        
         <div class="image-row">
             <imageCard v-for="(img, i) in images" :src="img.name" :disabled="img.disabled" 
-                :key="i" @click="clickCard(img, i)" :style="dynamicWidth" />
+                :key="i" @click="clickCard(img, i)" :style="dynamicWidth" :class="{'display_none': isEnableDisplay&&img.disabled}" />
         </div>
     </div>
 </template>
@@ -33,6 +34,7 @@ import imageCard from '@/components/imageCard.vue'
 const images = ref([]);
 const rowNum = ref(8);
 const disabledArray = ref([])
+const isEnableDisplay = ref(false)
 
 onMounted(() => {
     loadImages()
@@ -139,6 +141,8 @@ function getArrayFromCookie(name) {
 .title {
     display: flex;
     gap: 8px;
+    justify-content: center;
+    align-items: center;
 }
 
 .title_text {
@@ -152,6 +156,10 @@ function getArrayFromCookie(name) {
 }
   
 .image-row img {
-    //width: calc(100% / 12);
+    
+}
+
+.display_none {
+    display: none;
 }
 </style>
