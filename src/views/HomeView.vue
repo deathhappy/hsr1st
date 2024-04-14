@@ -84,8 +84,15 @@ function takeScreenshot() {
     html2canvas(document.body).then(canvas => {
         const imgURL = canvas.toDataURL();
 
-        const newWindow = window.open();
-        newWindow.document.write('<img src="' + imgURL + '" />');
+        const downloadLink = document.createElement('a');
+        downloadLink.href = imgURL;
+
+        downloadLink.download = 'screenshot.png';
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+
+        document.body.removeChild(downloadLink);
     });
 }
 
