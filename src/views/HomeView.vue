@@ -2,7 +2,7 @@
     <div>
         <div class="title" style="flex-direction: column;">
             <div class="title">
-                <div class="title_text">總數: 29 已收集：{{ disabledCount }} 未收集：{{29 - disabledCount}}</div>
+                <div class="title_text">總數: 29 未收集：{{ disabledCount }} 已收集：{{29 - disabledCount}}</div>
                 <div /><div />
                 <el-button type="primary" @click="resetCookie">清除紀錄</el-button>
                 <el-button type="primary" @click="takeScreenshot">輸出截圖</el-button>
