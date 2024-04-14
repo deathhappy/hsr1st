@@ -10,8 +10,8 @@ const props = defineProps({
     disabled: Boolean
 })
 
-function getImageUrl(path) {
-    return new URL(`${path}`, import.meta.url).href
+function getImageUrl(name) {
+    return new URL(`../assets/hsr1st/${name}.png`, import.meta.url).href
 }
 
 </script>

@@ -4,7 +4,7 @@
             <imageCard v-for="(img, i) in image" :src="getImageUrl(img)" :key="i" />
         </div> -->
         <div class="image-row">
-            <imageCard v-for="(img, i) in images" :src="getImageUrl(img.path)" :disabled="img.disabled" 
+            <imageCard v-for="(img, i) in images" :src="img.name" :disabled="img.disabled" 
                 :key="i" @click="img.disabled=!img.disabled" />
             {{ disabledCount }} / 29
         </div>
@@ -13,7 +13,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import imageCard from '../components/imageCard.vue'
+import imageCard from '@/components/imageCard.vue'
 const images = ref([]);
 
 const loadImages = () => {
@@ -22,7 +22,13 @@ const loadImages = () => {
     console.log(requireImages);
     for (const key in requireImages) {
         // console.log(key);
-        images.value.push({path: key, disabled: false})
+        const match = key.match(/([^\/]+)\.\w+$/);
+
+        const partyName = match ? match[1] : null;
+        //console.log('Party Name:', partyName);
+
+        images.value.push({name: partyName, path: key, disabled: false})
+
     }
     console.log(images.value)
 };
@@ -40,10 +46,6 @@ const imageChunks = computed(() => {
 const disabledCount = computed(() => {
     return 29 - images.value.filter(element => element.disabled).length
 })
-
-function getImageUrl(path) {
-    return new URL(`${path}`, import.meta.url).href
-}
 
 onMounted(loadImages);
 
