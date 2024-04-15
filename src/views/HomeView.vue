@@ -16,12 +16,15 @@
                 </el-select>
                 <el-button type="primary" @click="resetCookie">清除紀錄</el-button>
                 <el-button type="primary" @click="takeScreenshot">輸出截圖</el-button>
-                <el-switch v-model="isEnableDisplay" /><div class="title_text">只顯示未收集</div>
+                <el-switch v-model="isEnableDisplay" /><div class="title_text">不顯示半透明</div>
             </div>            
         </div>        
-        <div id="image_block" class="image-row">
-            <imageCard v-for="(img, i) in images" :src="img.name" :status="img.status"
-                :key="i" @click="clickCard(img, i)" :style="dynamicWidth" :class="{'display_none': isEnableDisplay&&img.status==0}" />
+        <div id="image_block" class="image_block">
+            <div class="image-row" v-for="(chunk, index) in imageChunks" :key="index">
+                <imageCard v-for="(img, i) in chunk" :src="img.name" :status="img.status"
+                    :key="i" @click="clickCard(img, i)" :class="{'display_none': isEnableDisplay&&img.status==0}" />
+            </div>
+            
         </div>
     </div>
 </template>
@@ -119,6 +122,15 @@ function rowNumChange() {
     setCookie('rowNum', rowNum.value)
 }
 
+const imageChunks = computed(() => {
+    const displayImagge = isEnableDisplay.value ? images.value.filter(item => item.status !== 0) : images.value
+    const chunks = [];
+    for (let i = 0; i < displayImagge.length; i += rowNum.value) {
+        chunks.push(displayImagge.slice(i, i + rowNum.value));
+    }
+    return chunks;
+});
+
 function getCookie(name) {
   const cookieString = document.cookie;
   const cookies = cookieString.split('; ');
@@ -166,10 +178,17 @@ function getArrayFromCookie(name) {
     font-size: 24px;
 }
 
+.image_block {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
 .image-row {
     width: 100%;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    flex-direction: row;
 }
   
 .image-row img {
