@@ -1,10 +1,9 @@
 <template>
     <div>
         <div class="title" style="flex-direction: column;">
-            <div class="title">
+            <!-- <div class="title">
                 <div class="title_text">總數: 29 未收集：{{ disabledCount }} 已收集：{{29 - disabledCount}}</div>
-                
-            </div>            
+            </div>-->
             <div class="title">
                 <div class="title_text">單排數量: </div>
                 <el-select v-model="rowNum" placeholder="Select" style="width: 80px" @change="rowNumChange">
@@ -20,9 +19,9 @@
                 <el-switch v-model="isEnableDisplay" /><div class="title_text">只顯示未收集</div>
             </div>            
         </div>        
-        <div class="image-row">
-            <imageCard v-for="(img, i) in images" :src="img.name" :disabled="img.disabled" 
-                :key="i" @click="clickCard(img, i)" :style="dynamicWidth" :class="{'display_none': isEnableDisplay&&img.disabled}" />
+        <div id="image_block" class="image-row">
+            <imageCard v-for="(img, i) in images" :src="img.name" :status="img.status"
+                :key="i" @click="clickCard(img, i)" :style="dynamicWidth" :class="{'display_none': isEnableDisplay&&img.status==0}" />
         </div>
     </div>
 </template>
@@ -32,8 +31,9 @@ import { ref, computed, onMounted, watch } from 'vue';
 import html2canvas from 'html2canvas'
 import imageCard from '@/components/imageCard.vue'
 const images = ref([]);
-const rowNum = ref(8);
+const rowNum = ref(10);
 const disabledArray = ref([])
+const statusArray = ref([[],[],[],[]])
 const isEnableDisplay = ref(false)
 
 onMounted(() => {
@@ -44,7 +44,8 @@ const loadImages = () => {
     images.value = []
     const requireImages = import.meta.glob('../assets/hsr1st/*.png');
     //console.log(requireImages);
-    disabledArray.value = getArrayFromCookie('disabledArray')
+    statusArray.value = getArrayFromCookie('statusArray');
+    console.log(statusArray.value);
     rowNum.value = Number(getCookie('rowNum')!= undefined ? getCookie('rowNum') : 8)
     for (const key in requireImages) {
         // console.log(key);
@@ -52,19 +53,26 @@ const loadImages = () => {
 
         const partyName = match ? match[1] : null;
         //console.log('Party Name:', partyName);
-        let isDisabled = disabledArray.value.includes(partyName)
-        images.value.push({name: partyName, path: key, disabled: isDisabled})
+        images.value.push({name: partyName, path: key, status: getStatus(partyName)})
     }
 
-    
     for (let index = 0; index < images.value.length; index++) {
         const element = images.value[index];        
     }
-    //console.log(images.value)
+    console.log(images.value)
 };
 
+function getStatus(key) {
+    for (let index = 0; index < statusArray.value.length; index++) {
+        const element = statusArray.value[index];
+        if(element.includes(key))
+            return index        
+    }
+    return -1
+}
+
 const dynamicWidth = computed(() => {
-    return `width: calc(100% / ${rowNum.value})`;
+    return `width: calc(100% / ${rowNum.value} - 16px);`;
 });
 
 const disabledCount = computed(() => {
@@ -72,18 +80,27 @@ const disabledCount = computed(() => {
 })
 
 function clickCard(img, index) {
-    img.disabled=!img.disabled
-    setArrayToCookie('disabledArray', images.value.filter(item => item.disabled === true).map(item => item.name))
+    img.status += 1
+    if(img.status > 3) {
+        img.status = -1
+    }
+    for (let index = 0; index < 4; index++) {
+        statusArray.value[index] = images.value.filter(item => item.status === index).map(item => item.name)
+    }
+    
+    setArrayToCookie('statusArray', statusArray.value)
+    // img.disabled=!img.disabled
+    // setArrayToCookie('disabledArray', images.value.filter(item => item.disabled === true).map(item => item.name))
 }
 
 function resetCookie() {
-    setArrayToCookie('disabledArray', [])
-    setCookie('rowNum', 8)
+    setArrayToCookie('statusArray', [])
     loadImages()
 }
 
-function takeScreenshot() {
-    html2canvas(document.body).then(canvas => {
+function takeScreenshot() {   
+    const element = document.getElementById('image_block');
+    html2canvas(element).then(canvas => {
         const imgURL = canvas.toDataURL();
 
         const downloadLink = document.createElement('a');
